@@ -3,10 +3,12 @@ package com.example.roomdemo
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
+import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.roomdemo.databinding.ActivityMainBinding
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
@@ -20,6 +22,13 @@ class MainActivity : AppCompatActivity() {
         binding.btnAdd.setOnClickListener {
             addRecord(employeeDao)
         }
+        //loading date must run in the background
+        lifecycleScope.launch {
+            employeeDao.fetchAllEmployees().collect{
+                val list = ArrayList(it)
+                setupListOfDataIntoRecyclerView(list, employeeDao)
+            }
+        }
     }
 
     private fun setupListOfDataIntoRecyclerView(employeesList:ArrayList<EmployeeEntity>,
@@ -27,9 +36,14 @@ class MainActivity : AppCompatActivity() {
 
         if (employeesList.isNotEmpty()) {
             // Adapter class is initialized and list is passed in the param.
-
+            val itemAdapter = ItemAdapter(employeesList)
+            binding.apply {
+                rvItemsList.layoutManager = LinearLayoutManager(this@MainActivity)
+                rvItemsList.adapter = itemAdapter
+                rvItemsList.visibility = View.VISIBLE
+                tvNoRecordsAvailable.visibility = View.GONE
+            }
         } else {
-
             binding.rvItemsList.visibility = View.GONE
             binding.tvNoRecordsAvailable.visibility = View.VISIBLE
         }
