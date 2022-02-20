@@ -35,9 +35,8 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun setupListOfDataIntoRecyclerView(employeesList:ArrayList<EmployeeEntity>,
+    private fun setupListOfDataIntoRecyclerView(employeesList: ArrayList<EmployeeEntity>,
                                                 employeeDao: EmployeeDao) {
-
         if (employeesList.isNotEmpty()) {
             // Adapter class is initialized and list is passed in the param.
             val itemAdapter = ItemAdapter(employeesList,{updateId ->
